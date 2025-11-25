@@ -15,8 +15,7 @@ public abstract class Employee {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("^\\+?[1-9]\\d{1,14}$");
-    private static final double MIN_SALARY = 0.0;
-    // Static counter to demonstrate use of static fields
+    private static final double MIN_SALARY = 0.0;s
     private static int employeeCount = 0;
 
     private final String employeeId;
@@ -32,10 +31,7 @@ public abstract class Employee {
     private double salary;
     private WorkSchedule workSchedule;
     private boolean isActive;
-
-    /**@throws IllegalArgumentException 
-     @throws NullPointerException 
-     */
+    
     public Employee(String employeeId, String firstName, String lastName, String email, 
                    String phoneNumber, Department department, Position position, 
                    String hireDate, double salary, WorkSchedule workSchedule) {
@@ -113,14 +109,10 @@ public abstract class Employee {
         this.isActive = true;
     }
 
-    // --- Polymorphism extension points ---
-    // Role identifier for the concrete employee
     public abstract String getRole();
 
-    // Perform role-specific duties (demo method for polymorphism)
     public abstract void performDuties();
 
-    // Short contact summary used when interacting via abstract type
     public abstract String getContactSummary();
 
     @Override
@@ -185,3 +177,4 @@ public abstract class Employee {
         return salary;
     }
 } 
+
