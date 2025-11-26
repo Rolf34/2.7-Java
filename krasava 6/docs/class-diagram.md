@@ -1,51 +1,360 @@
-**Class Diagram (Polymorphism changes)**
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Діаграма класів - Система управління компанією</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .diagram-container {
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Діаграма класів системи управління компанією</h1>
+        
+        <div class="controls">
+            <button onclick="zoomIn()">🔍 Збільшити</button>
+            <button onclick="zoomOut()">🔍 Зменшити</button>
+            <button onclick="resetZoom()">↺ Скинути</button>
+        </div>
 
-- **Overview**: This document describes the main abstract classes and their implemented subclasses after applying polymorphism principles for Practical Work №6.
+        <div class="diagram-container" id="diagramContainer">
+            <div class="mermaid" id="diagram">
+classDiagram
+    class Main {
+        +main(String[] args) void
+        -createManager() Manager
+        -createDeveloper() RegularEmployee
+        -createHRSpecialist() HRSpecialist
+    }
 
-- **Abstract classes**:
-  - `Employee` : abstract base for all employee types.
-    - Abstract methods:
-      - `getRole()` : returns role name
-      - `performDuties()` : executes role-specific actions (demo)
-      - `getContactSummary()` : short contact info
-  - `ProjectEntity` : abstract base for project-related entities.
-    - Abstract methods:
-      - `onStatusChanged()` : hook called when status changes
-      - `start()` : start lifecycle
-      - `pause()` : pause lifecycle
-      - `complete()` : complete lifecycle
-  - `OrganizationalUnit` : already abstract in the project and provides:
-    - `activate()`
-    - `deactivate()`
-    - `getType()`
+    class Employee {
+        -employeeId String
+        -firstName String
+        -lastName String
+        -email String
+        -phoneNumber String
+        -department Department
+        -position Position
+        -salary double
+        -workSchedule WorkSchedule
+        -isActive boolean
+        +getFullName() String
+        +updateEmail(String) void
+        +transferToDepartment(Department) void
+        +adjustSalary(double) void
+        +deactivate() void
+        +getRole()* String
+        +performDuties()* void
+        +getContactSummary()* String
+    }
 
-- **Concrete subclasses**:
-  - `company.empoloyees.RegularEmployee` : general concrete employee used by the factory when a generic employee is needed.
-  - `company.empoloyees.Admin`, `HRSpecialist`, `Manager` : concrete employee types implementing the `Employee` abstract methods.
-  - `company.projects.Project` and `company.projects.Task` : concrete project entities implementing lifecycle methods from `ProjectEntity`.
-  - `company.structure.Department` : concrete `OrganizationalUnit` implementation.
+    class RegularEmployee {
+        +getRole() String
+        +performDuties() void
+        +getContactSummary() String
+    }
 
-- **Key design notes**:
-  - Callers now interact through abstract types where appropriate. Example: `Project` constructor accepts an `Employee` owner (abstract base) instead of a concrete `Manager` only.
-  - `ObjectFactory` no longer instantiates `Employee` directly; it creates `RegularEmployee` which is a concrete subclass of `Employee`.
-  - The `ProjectEntity` lifecycle methods (`start`, `pause`, `complete`) are abstract to demonstrate polymorphic lifecycle behavior across `Project` and `Task`.
+    class Admin {
+        -adminId String
+        -fullAccess boolean
+        -lastLoginDate String
+        +grantAccess(Employee, String) void
+        +hasFullAccess() boolean
+        +getRole() String
+        +performDuties() void
+        +getContactSummary() String
+    }
 
-- **Simple UML-like sketch**:
+    class Manager {
+        -managedDepartment Department
+        +getManagedDepartment() Department
+        +getRole() String
+        +performDuties() void
+        +getContactSummary() String
+    }
 
-  ProjectEntity <|-- Project
-  ProjectEntity <|-- Task
-  Employee <|-- RegularEmployee
-  Employee <|-- Admin
-  Employee <|-- HRSpecialist
-  Employee <|-- Manager
-  OrganizationalUnit <|-- Department
+    class HRSpecialist {
+        -accessPermissions List
+        -managedDepartments List
+        +createEmployeeProfile() void
+        +updateEmployeeDepartment(Employee, Department) void
+        +canManageDepartment(Department) boolean
+        +getRole() String
+        +performDuties() void
+        +getContactSummary() String
+    }
 
-  (ProjectEntity) : +start()
-  (ProjectEntity) : +pause()
-  (ProjectEntity) : +complete()
-  (Employee) : +getRole()
-  (Employee) : +performDuties()
-  (Employee) : +getContactSummary()
+    class OrganizationalUnit {
+        #code String
+        #name String
+        #description String
+        #createdDate LocalDateTime
+        #lastModifiedDate LocalDateTime
+        #isActive boolean
+        +activate()* void
+        +deactivate()* void
+        +getType()* String
+    }
 
----
-Add this diagram to your report (or convert to PlantUML) if you need a graphical UML image.
+    class Department {
+        -manager Manager
+        -parentDepartment Department
+        -subDepartments List
+        -employees List
+        -budget double
+        +setManager(Manager) void
+        +addEmployee(Employee) void
+        +getTotalSalaries() double
+        +isWithinBudget() boolean
+        +getEmployeeCount() int
+    }
+
+    class ProjectEntity {
+        #id String
+        #title String
+        #description String
+        #startDate LocalDateTime
+        #dueDate LocalDateTime
+        #owner Employee
+        #status Status
+        #onStatusChanged()* void
+        +start()* void
+        +pause()* void
+        +complete()* void
+    }
+
+    class Status {
+        NEW
+        IN_PROGRESS
+        ON_HOLD
+        COMPLETED
+        CANCELLED
+    }
+
+    class Project {
+        -tasks List
+        -team List
+        -estimatedHours double
+        -actualHours double
+        +addTeamMember(Employee) void
+        +addTask(Task) void
+        +getProgress() double
+        +start() void
+        +pause() void
+        +complete() void
+    }
+
+    class Task {
+        -project Project
+        -timeEntries List
+        -estimatedHours double
+        -actualHours double
+        -priority TaskPriority
+        +logWork(TimeEntry) void
+        +setPriority(TaskPriority) void
+        +getProgress() double
+        +start() void
+        +pause() void
+        +complete() void
+    }
+
+    class TaskPriority {
+        LOW
+        MEDIUM
+        HIGH
+        CRITICAL
+    }
+
+    class TimeEntry {
+        -id String
+        -employee Employee
+        -project Project
+        -task Task
+        -startTime LocalDateTime
+        -endTime LocalDateTime
+        -approved boolean
+        +stopWork(LocalDateTime) void
+        +getHours() double
+        +approve() void
+    }
+
+    class Position {
+        -positionId String
+        -title String
+        -minSalary double
+        -maxSalary double
+        -accessLevel int
+        +isSalaryInRange(double) boolean
+        +addRequiredSkill(String) void
+    }
+
+    class Report {
+        -reportId String
+        -title String
+        -type ReportType
+        -generatedBy Employee
+        -generationDate LocalDateTime
+        +generateTimeReport(List) void
+        +exportReport(String) void
+    }
+
+    class WorkSchedule {
+        -scheduleId String
+        -scheduleName String
+        -workDaysPerWeek int
+        -hoursPerDay double
+        -startTime LocalTime
+        -endTime LocalTime
+        -isFlexible boolean
+        +updateWorkingHours(LocalTime, LocalTime) void
+        +getWeeklyWorkingTime() Duration
+        +isWorkingDay(DayOfWeek) boolean
+    }
+
+    class ObjectFactory {
+        +createDepartment(String, String, String) Department
+        +createPosition(String, String, String, double, double) Position
+        +createWorkSchedule(String, String) WorkSchedule
+        +createEmployee(String, String, String, Department, Position, String, double, WorkSchedule) Employee
+        +createManager(String, String, String, Department, Position, String, double, WorkSchedule) Manager
+        +createProject(String, String, Employee) Project
+    }
+
+    class CompanyDataStore {
+        +addEmployee(Employee) void
+        +getAllEmployees() Map
+    }
+
+    Main ..> ObjectFactory
+    Main ..> Department
+    Main ..> Manager
+
+    Employee <|-- RegularEmployee
+    Employee <|-- Admin
+    Employee <|-- Manager
+    Employee <|-- HRSpecialist
+
+    OrganizationalUnit <|-- Department
+
+    Employee --> Position
+    Employee --> Department
+    Employee --> WorkSchedule
+
+    Department --> Manager
+    Department *-- Employee
+
+    ProjectEntity <|-- Project
+    ProjectEntity <|-- Task
+    ProjectEntity --> Employee
+
+    Project *-- Task
+    Project --> Employee
+
+    Task --> Project
+    Task *-- TimeEntry
+    Task --> Employee
+
+    TimeEntry --> Employee
+    TimeEntry --> Task
+
+    Report --> Employee
+
+    HRSpecialist --> Department
+    Admin ..> Report
+    ObjectFactory ..> Employee
+    CompanyDataStore ..> Employee
+            </div>
+        </div>
+
+        <div class="info">
+            <strong>Легенда:</strong><br>
+            <code>+</code> public | <code>-</code> private | <code>#</code> protected | <code>~</code> package-private<br>
+            <code>$</code> static | <code>*</code> abstract<br>
+            <code>&lt;|--</code> наслідування | <code>*--</code> композиція | <code>--&gt;</code> асоціація | <code>..&gt;</code> залежність
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                fontSize: '14px'
+            }
+        });
+
+        let currentZoom = 1;
+
+        function zoomIn() {
+            currentZoom += 0.1;
+            applyZoom();
+        }
+
+        function zoomOut() {
+            if (currentZoom > 0.3) {
+                currentZoom -= 0.1;
+                applyZoom();
+            }
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const diagram = document.getElementById('diagram');
+            diagram.style.transform = `scale(${currentZoom})`;
+            diagram.style.transformOrigin = 'top center';
+        }
+    </script>
+</body>
+</html>
